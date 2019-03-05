@@ -16,6 +16,8 @@ class Renderer: NSObject {
     var vertexBuffer: MTLBuffer!
     var pipelineState: MTLRenderPipelineState!
     
+    var timer: Float = 0
+    
     init(metalView: MTKView) {
 
         guard let device = MTLCreateSystemDefaultDevice() else {
@@ -68,6 +70,10 @@ extension Renderer: MTKViewDelegate {
             let renderEncoder = commandBuffer.makeRenderCommandEncoder(descriptor: descriptor) else {
                 return
         }
+        
+        timer += 0.05
+        var currentTime = sin(timer)
+        renderEncoder.setVertexBytes(&currentTime, length: MemoryLayout<Float>.stride, index: 1)
         
         renderEncoder.setRenderPipelineState(pipelineState)
         renderEncoder.setVertexBuffer(vertexBuffer, offset: 0, index: 0)
