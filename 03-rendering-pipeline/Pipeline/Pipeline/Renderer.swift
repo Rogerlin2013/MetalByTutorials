@@ -23,8 +23,24 @@ class Renderer: NSObject {
         guard let device = MTLCreateSystemDefaultDevice() else {
             fatalError("GPU not available")
         }
+        // load train.obj
+        let allocator = MTKMeshBufferAllocator(device: device)
         
-        let mdlMesh = Primitive.makeCube(device: device, size: 1)
+        guard let assetURL = Bundle.main.url(forResource: "train", withExtension: "obj") else {
+            fatalError()
+        }
+        let vertexDescriptor = MTLVertexDescriptor()
+        vertexDescriptor.attributes[0].format = .float3
+        vertexDescriptor.attributes[0].offset = 0
+        vertexDescriptor.attributes[0].bufferIndex = 0
+        
+        vertexDescriptor.layouts[0].stride = MemoryLayout<float3>.stride
+        let meshDescriptor = MTKModelIOVertexDescriptorFromMetal(vertexDescriptor)
+        (meshDescriptor.attributes[0] as! MDLVertexAttribute).name = MDLVertexAttributePosition
+        
+        let asset = MDLAsset(url: assetURL, vertexDescriptor: meshDescriptor, bufferAllocator: allocator)
+        let mdlMesh = asset.object(at: 0) as! MDLMesh
+        
         do {
             mesh = try MTKMesh(mesh: mdlMesh, device: device)
         } catch let error {

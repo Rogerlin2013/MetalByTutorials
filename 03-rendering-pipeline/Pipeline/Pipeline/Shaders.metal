@@ -16,10 +16,10 @@ struct VertexIn {
 vertex float4 vertex_main(const VertexIn vertexIn [[ stage_in ]],
                           constant float &timer [[ buffer(1) ]]) {
     float4 position = vertexIn.position;
-    position.y += timer;
+    position.x += timer;
     return position;
 }
 
 fragment float4 fragment_main() {
-    return float4(1, 0, 0, 1);
+    return float4(0, 0, 1, 1);
 }
